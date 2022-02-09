@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=yes, maximum-scale=1.0, minimum-scale=1.0">
+<title>subpage</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" href="style.css" type="text/css" media="screen">
+<!--[if lt IE 9]>
+<script src="js/html5.js"></script>
+<script src="js/css3-mediaqueries.js"></script>
+<![endif]-->
+<script src="js/jquery1.7.2.min.js"></script>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+<header id="header" role="banner">
+	<div class="inner">
+		<h1>九州大学　理学部　数学科</h1>
+		<h2><a href="index.html">竹永　耕大　のHP</a></h2>
+	</div>
+</header>
+
+<nav id="mainNav">
+	<div class="inner">
+		<a class="menu" id="menu"><span>MENU</span></a>
+		<div class="panel">
+			<ul>
+				<li><a href="sub_univ.html"><strong>大学での成果</strong><span>university</span></a></li>
+				<li><a href="sub_math.html"><strong>数学と日常</strong><span>math and everydy</span></a></li>
+				<li><a href="sub_past.html"><strong>　過去問　</strong><span>past paper</span></a></li>
+				<li><a href="sub_prob.html"><strong>その他問題集</strong><span>problems</span></a></li>
+				<li><a href="sub_info.html"><strong>　情報　</strong><span>information</span></a></li>
+				<li><a href="sub_othe.html"><strong>　その他　</strong><span>others</span></a>
+					<ul class="sub-menu">
+						<li><a href="https://www.skaji.org">鍛冶先生HP</a></li>
+						<li><a href="https://ryokawai-github.github.io/website/">河井さんHP</a></li>
+						<li><a >あはは</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div id="wrapper">
+
+	<div id="content2">
+		<section>
+			<article class="content2">
+				<header>
+					<h2 class="title first"><span>アレクサンドロフパズル</span></h2>
+				</header>
+				<div class="post">
+					<p>ラテンクロスの14本の辺に対し，辺々接着をおこなった際にできる凸多面体を見つけるプログラム．</p>
+					<p>入力はなし．出力は辺々接着の順番と，同一視される点．</p>
+					<p>別の接着により同じ多面体が生成されることもあるので，同値分類するのであれば実際に折ってみる必要がある．</p>
+					<h3>ソースコード</h3>
+					<pre><code>
+						#単純多角形から凸多面体を折ることができるか
+						#チャック接着で検証
+						#一般化
+						import numpy as np
+						import copy
+
+						M=14
+						#角度情報
+						Arg=[[90,270,90,90,270,180,90,90,180,270,90,90,270,90],[],[],[],[],[],[],[],[]]
+						#頂点のナンバリング
+						N=[[1,2,3,4,5,6,7,8,9,10,11,12,13,14],[],[],[],[],[],[],[],[]]
+						#一時保管用配列
+						TMP=[[],[],[],[],[],[],[]]
+						#同値にみなす頂点の格納
+						V=[[[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14]],[],[],[],[],[],[],[]]
+
+						Equ=[]
+						T=[]
+
+						#チャック折り可否判定 0:可能 1:不可能
+						def check(i,n):
+								i1=i % (M-2*n)
+								i2=(i-1) % (M-2*n)
+								i3=(i+1) % (M-2*n)
+								if (Arg[n][i3]+Arg[n][i2])&lt;361:
+										return 0
+								elif n==(int(M/2)-1):
+										return 0
+								else:
+										return 1
+
+						#一回の折り関数
+						def ori(i,n):
+								i1=i % (M-2*n)
+								i2=(i-1) % (M-2*n)
+								i3=(i+1) % (M-2*n)
+								arg=copy.deepcopy(Arg[n])
+								num=copy.deepcopy(N[n])
+								ver=copy.deepcopy(V[n])
+								tmp1=arg[i1]
+								tmp2=arg[i2]
+								tmp3=arg[i3]
+								arg[i1]=tmp1
+								arg[i2]=tmp2+tmp3
+								arg[i3]=tmp2+tmp3
+								v1=ver[num[i2]-1]
+								v2=ver[num[i3]-1]
+								for i in range(len(v1)):
+										for j in range(len(v2)):
+												y=v2[j] in ver[v1[i]-1]
+												if y==False:
+														ver[v1[i]-1].append(v2[j])
+								for i in range(len(v2)):
+										for j in range(len(v1)):
+												y=v1[j] in ver[v2[i]-1]
+												if y==False:
+														ver[v2[i]-1].append(v1[j])
+								if i2&gt;i3:
+										if i1&lt;i2:
+												arg.pop(i2);arg.pop(i1)
+												num.pop(i2);num.pop(i1)
+										else:
+												arg.pop(i1);arg.pop(i2)
+												num.pop(i1);num.pop(i2)
+								else:
+										if i1&lt;i3:
+												arg.pop(i3);arg.pop(i1)
+												num.pop(i3);num.pop(i1)
+										else:
+												arg.pop(i1);arg.pop(i3)
+												num.pop(i1);num.pop(i3)
+								arg.extend([0,0])
+								num.extend([0,0])
+								Arg[n+1]=arg;N[n+1]=num
+								V[n+1]=ver
+
+						#繰り返し関数
+						def saiki(i,n):
+								ori(i,n)
+								TMP[n]=N[n][i]
+								n=n+1
+								for j in range(M-2*n):
+										Arg[n+2]=Arg[n+1];N[n+2]=N[n+1]
+										if check(j,n)==0:
+												if n==(int(M/2-1)):
+														saikiend(j,n)
+												else:
+														saiki(j,n)
+
+						#最終曲面
+						def saikiend(i,n):
+								ori(i,n)
+								TMP[n]=N[n][i]
+								T1=copy.deepcopy(TMP)
+								T.append(T1)
+								Equ.append(V[n+1])
+
+						def show(l):
+								print(len(l))
+								for i in range(len(l)):
+										n=0
+										for j in range(i+1,len(l)-n):
+												print(i,j)
+												if l[j]==l[i]:
+														l.pop(j)
+														n=n+1
+								return l
+
+						#メイン関数
+						def main():
+								for i in range(int(M/2)):
+										V[0]=[[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14]]
+										n=0 #カウンタ n=0が始点
+										if check(i,n)==0:
+												saiki(i,n)
+								for i in range(len(Equ)):
+										for j in range(len(Equ[i])):
+												Equ[i][j].sort()
+										Equ[i].sort()
+								#同値分類
+								#まず左右対称
+								A=[]
+								for i in range(len(Equ)):
+										A.append([])
+										for j in range(len(Equ[i])):
+												A[i].append([])
+												for k in range(len(Equ[i][j])):
+														A[i][j].append(15-Equ[i][j][k])
+												A[i][j].sort()
+										A[i].sort()
+								#同値でないものの数え上げ
+								tmp=[0]
+								for i in range(len(T)):
+										m=0
+										for j in range(len(tmp)):
+												if Equ[tmp[j]]==Equ[i]:
+														m=m+1
+												if Equ[tmp[j]]==A[i]:
+														m=m+1
+										if m==0:
+												tmp.append(i)
+								print(&quot;同値で分類&quot;)
+								print(len(tmp))
+								for i in range(len(tmp)):
+										arr=list(map(list, set(map(tuple, Equ[tmp[i]]))))
+										arr.sort()
+										print(&quot;折り順:&quot;, T[tmp[i]],&quot;接着される点:&quot;,arr)
+
+						if __name__ == &quot;__main__&quot;:
+								main()
+					</code></pre>
+				</div>
+			</article>
+		</section>
+	</div><!-- / content -->
+
+
+</div>
+<!-- / wrapper -->
+
+<footer id="footer">
+	<p id="copyright">Copyright &copy; Sample Company All rights Reserved. Design by <a href="http://f-tpl.com" target="_blank" rel="nofollow">http://f-tpl.com</a>
+</footer>
+<!-- / footer -->
+
+</body>
+</html>

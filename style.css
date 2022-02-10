@@ -40,6 +40,26 @@ outline: none;
 color:#6f6f6f;
 }
 
+code{
+  overflow: auto;
+  resize: horizontal;
+  display: inline-block;
+  padding: 0.1em 0.25em; /* 文字周りの余白 */
+  margin: 1em 1em;
+  color: #444; /* 文字色 */
+  background-color: #e7edf3; /* 背景色 */
+  border-radius: 3px; /* 角丸 */
+  border: solid 1px #d6dde4; /* 枠線 */
+}
+pre {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 5px;
+  background: #25292f;
+  color: #fff;
+  overflow-x: auto; /* ⭐ */
+  -webkit-overflow-scrolling: touch; /* ⭐ */
+}
 
 
 /**** Clearfix ****/
@@ -65,7 +85,7 @@ padding:22px 0 50px;
 }
 
 #content2{
-float:right;
+float:left;
 width:900px;
 padding:22px 0 50px;
 }

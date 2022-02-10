@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=yes, maximum-scale=1.0, minimum-scale=1.0">
+<title>subpage</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" href="style.css" type="text/css" media="screen">
+<!--[if lt IE 9]>
+<script src="js/html5.js"></script>
+<script src="js/css3-mediaqueries.js"></script>
+<![endif]-->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script src="js/jquery1.7.2.min.js"></script>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+<header id="header" role="banner">
+	<div class="inner">
+		<h1>九州大学　理学部　数学科</h1>
+		<h2><a href="index.html">竹永　耕大　のHP</a></h2>
+	</div>
+</header>
+
+<nav id="mainNav">
+	<div class="inner">
+		<a class="menu" id="menu"><span>MENU</span></a>
+		<div class="panel">
+			<ul>
+				<li><a href="sub_univ.html"><strong>大学での成果</strong><span>university</span></a></li>
+				<li><a href="sub_math.html"><strong>数学と日常</strong><span>math and everydy</span></a></li>
+				<li><a href="sub_past.html"><strong>　過去問　</strong><span>past paper</span></a></li>
+				<li><a href="sub_prob.html"><strong>その他問題集</strong><span>problems</span></a></li>
+				<li><a href="sub_info.html"><strong>　情報　</strong><span>information</span></a></li>
+				<li><a href="sub_othe.html"><strong>　その他　</strong><span>others</span></a>
+					<ul class="sub-menu">
+						<li><a href="https://www.skaji.org">鍛冶先生HP</a></li>
+						<li><a href="https://ryokawai-github.github.io/website/">河井さんHP</a></li>
+						<li><a >あはは</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div id="wrapper">
+
+	<div id="content2">
+		<section>
+			<article class="content2">
+				<header>
+					<h2 class="title first"><span>目次</span></h2>
+				</header>
+				<div class="post">
+					指標計算のうち，面積計算に用いたソースコードです．注意点は，一つ上で画像を出力して，その画像たちと同じフォルダ内で動かす必要があること．
+					<h3>ソースコード</h3>
+<pre><code class="prettyprint linenums">import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+LIST=[]
+
+#以下画像より算出
+
+for co in range(1,129):
+    LIST.append([])
+    img = cv2.imread(&quot;%03.f&quot;%(co)+&quot;.jpg&quot;)
+    # グレースケールに変換する。
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # 2値化する
+    ret, bin_img = cv2.threshold(gray, 50, 255, cv2.THRESH_BINARY)
+    # 連結成分のラベリングを行う。
+    n_labels, labels = cv2.connectedComponents(bin_img)
+    # 連結成分のラベリングを行う。
+    retval, labels, stats, centroids = cv2.connectedComponentsWithStats(bin_img)
+    for i, row in enumerate(stats):
+        a=row[cv2.CC_STAT_AREA]
+        LIST[co-1].append(a)
+    LIST[co-1].pop(0)
+    LIST[co-1].pop(0)
+    # ラベル数
+    #print(&quot;number of labels:&quot;, n_labels-2)
+s_max=0
+v_min=1000000000000
+num_min=100
+for i in range(len(LIST)):
+    s_min=100000
+    for j in range(len(LIST[i])):
+        if LIST[i][j]&lt;s_min:
+            s_min=LIST[i][j]
+    l=LIST[i]
+    my_pvariance=sum((x-sum(l)/len(l))**2 for x in l)/len(l)
+    print(&quot;number&quot;,i)
+    print(&quot;領域数&quot;,len(LIST[i]))
+    print(&quot;分散&quot;,my_pvariance)
+    if num_min&gt;len(LIST[i]):
+        num_min=len(LIST[i])
+        print(&quot;==================領域数min 候補 ==================&quot;)
+        print(num_min)
+    if my_pvariance&lt;v_min:
+        print(&quot;==================面積分散min 候補! ==================&quot;)
+        v_min=my_pvariance
+        print(v_min)
+    elif my_pvariance&lt;(v_min*1.2):
+        print(&quot;==================面積分散min 候補 ==================&quot;)
+        print(v_min)
+    if s_max&lt;s_min:
+        print(&quot;==================最小面積max 候補 ==================&quot;)
+        print(s_min)
+        s_max=s_min
+    elif s_max&lt;s_min+20:#誤差考慮
+        print(&quot;==================最小面積max 候補 ==================&quot;)
+        print(s_min)
+    print(&quot; &quot;)
+
+
+
+
+&quot;&quot;&quot;
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.imshow(labels)
+plt.show()
+&quot;&quot;&quot;
+</pre></code>
+				</div>
+			</article>
+		</section>
+	</div><!-- / content -->
+
+
+</div>
+<!-- / wrapper -->
+
+<footer id="footer">
+	<p id="copyright">Copyright &copy; Sample Company All rights Reserved. Design by <a href="http://f-tpl.com" target="_blank" rel="nofollow">http://f-tpl.com</a>
+</footer>
+<!-- / footer -->
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=yes, maximum-scale=1.0, minimum-scale=1.0">
+<title>subpage</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="stylesheet" href="style.css" type="text/css" media="screen">
+<!--[if lt IE 9]>
+<script src="js/html5.js"></script>
+<script src="js/css3-mediaqueries.js"></script>
+<![endif]-->
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script src="js/jquery1.7.2.min.js"></script>
+<script src="js/script.js"></script>
+</head>
+<body>
+
+<header id="header" role="banner">
+	<div class="inner">
+		<h1>九州大学　理学部　数学科</h1>
+		<h2><a href="index.html">竹永　耕大　のHP</a></h2>
+	</div>
+</header>
+
+<nav id="mainNav">
+	<div class="inner">
+		<a class="menu" id="menu"><span>MENU</span></a>
+		<div class="panel">
+			<ul>
+				<li><a href="sub_univ.html"><strong>大学での成果</strong><span>university</span></a></li>
+				<li><a href="sub_math.html"><strong>数学と日常</strong><span>math and everydy</span></a></li>
+				<li><a href="sub_past.html"><strong>　過去問　</strong><span>past paper</span></a></li>
+				<li><a href="sub_prob.html"><strong>その他問題集</strong><span>problems</span></a></li>
+				<li><a href="sub_info.html"><strong>　情報　</strong><span>information</span></a></li>
+				<li><a href="sub_othe.html"><strong>　その他　</strong><span>others</span></a>
+					<ul class="sub-menu">
+						<li><a href="https://www.skaji.org">鍛冶先生HP</a></li>
+						<li><a href="https://ryokawai-github.github.io/website/">河井さんHP</a></li>
+						<li><a >あはは</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div id="wrapper">
+
+	<div id="content2">
+		<section>
+			<article class="content2">
+				<header>
+					<h2 class="title first"><span>目次</span></h2>
+				</header>
+				<div class="post">
+					ダイクストラ法で最短経路問題を解くプログラムです．コードの下にサンプルデータを置いておきます．
+					<h3>ソースコード</h3>
+<pre><code class="prettyprint linenums">
+	//ダイクストラ法で最短経路問題を解く
+	//有向グラフ
+
+	#include&lt;stdio.h&gt;
+
+	//グローバル変数
+	#define INF 100000        //
+	#define SIZE 100          //頂点数の上限の設定
+
+	int BRANCH[SIZE][SIZE];   //各経路の重みを保持
+	int COST[SIZE];           //かかった距離を保持
+	int CONF[SIZE];           //確定or確定していないを1or0で保持
+
+	//初期化関数
+	void init(){
+	  int i,j;
+	  for(i=0;i&lt;SIZE;i++){
+	    COST[i]=INF;
+	    CONF[i]=0;
+	    for(j=0;j&lt;SIZE;j++){
+	      BRANCH[i][j]=INF;
+	    }
+	  }
+	}
+
+	//ダイクストラ法実装関数
+	void dijkstra(int s, int N){
+	  int min,t,i,j,tmp;
+	  COST[s]=0;
+	  while(1){
+	    min=INF;
+	    tmp=0;
+	    //未確定かつ最小コストの頂点を確定させる
+	    for(i=0;i&lt;N;i++){
+	      if((CONF[i]==0)&amp;&amp;(COST[i]&lt;min)){
+		min=COST[i];
+		t=i;
+	      }
+	    }
+	    CONF[t]=1;
+	    //未確定点無くなったら終了
+	    for(i=0;i&lt;N;i++){  //確定点数え，その数が頂点数と一致したら終了
+	      if(CONF[i]==1){
+		tmp+=1;
+	      }
+	    }
+	    if(tmp==N){
+	      break;
+	    }
+	    //確定点から未確定点への距離計算
+	    for(i=0;i&lt;N;i++){
+	      if(COST[i]&gt;BRANCH[t][i]+COST[t]){ //最小のものをその点へのコストとする．
+		COST[i]=BRANCH[t][i]+COST[t];
+	      }
+	    }
+	  }
+	  //最短経路の保存
+	  for(i=0;i&lt;N;i++){
+	    for(j=0;j&lt;N;j++){
+	      if(COST[j]-COST[i]!=BRANCH[i][j]){ //最短経路として利用しないものをINFにする
+	        BRANCH[i][j]=INF;
+	      }
+	    }
+	  }
+	}
+
+	//結果表示の関数
+	void result(int s,int g,int N){
+	  int i,j,k;
+	  //入力した始点と終点に対するコストの表示
+	  printf(&quot;COST=%d\n&quot;,COST[g]);
+	  printf(&quot;最短経路の一つを表示\n&quot;);
+	  printf(&quot;%d &quot;,g);
+	  //経路の表示
+	  k=g;
+	  while(1){
+	    if(k==s){
+	      printf(&quot;\n&quot;);
+	      break;
+	    }
+	    for(i=0;i&lt;N;i++){
+	      if(BRANCH[i][k]&lt;INF){
+	        printf(&quot;&lt;- %d &quot;,i);
+	        k=i;
+	        break;
+	      }
+	    }
+	  }
+	}
+
+	//メイン関数
+	int main(){
+	  int N,s,g,i,j,k,a,b,c;
+	  init();                        //初期化
+	  scanf(&quot;%d %d&quot;,&amp;N,&amp;k);          //頂点と枝の数入力
+	  for(i=0;i&lt;k;i++){
+	    scanf(&quot;%d %d %d&quot;,&amp;a,&amp;b,&amp;c);
+	    BRANCH[a][b]=c;
+	  }
+	  printf(&quot;start=&quot;);
+	  scanf(&quot;%d&quot;,&amp;s);                 //スタート地点の入力
+	  dijkstra(s,N);                  //ダイクストラ法実装
+	  //for(i=0;i&lt;N;i++){
+	  //  for(j=0;j&lt;N;j++){
+	  //    printf(&quot;%d &quot;,BRANCH[i][j]);
+	  //  }
+	  //  printf(&quot;\n&quot;);
+	  //}
+	  printf(&quot;===== goal=-1で終了 =====\n&quot;);
+	  while(1){                   //-1入力で終了
+	    printf(&quot;goal=&quot;);
+	    scanf(&quot;%d&quot;,&amp;g);               //ゴール地点入力
+	    if(g==-1){
+	      printf(&quot;終了\n&quot;);
+	      break;
+	    }
+	    result(s,g,N);                //結果出力
+	  }
+	  return 0;
+	}
+</pre></code>
+      <h3>サンプルデータ(txtファイル)</h3>
+<pre><code class="prettyprint linenums">
+	11 30
+	0 1 5
+	0 2 4
+	0 3 2
+	1 2 1
+	1 4 1
+	1 6 7
+	1 7 4
+	2 1 1
+	2 3 2
+	2 4 3
+	2 5 2
+	3 2 1
+	3 5 4
+	3 6 3
+	4 5 2
+	4 7 4
+	4 8 3
+	5 2 3
+	5 4 1
+	5 9 3
+	6 5 5
+	6 7 2
+	6 8 5
+	6 10 6
+	7 10 3
+	8 7 1
+	8 9 2
+	9 10 5
+	10 7 3
+	10 9 1
+</pre></code>
+				</div>
+			</article>
+		</section>
+	</div><!-- / content -->
+
+
+</div>
+<!-- / wrapper -->
+
+<footer id="footer">
+	<p id="copyright">Copyright &copy; Sample Company All rights Reserved. Design by <a href="http://f-tpl.com" target="_blank" rel="nofollow">http://f-tpl.com</a>
+</footer>
+<!-- / footer -->
+
+</body>
+</html>

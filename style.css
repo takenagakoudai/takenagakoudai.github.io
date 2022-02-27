@@ -61,6 +61,9 @@ pre {
   -webkit-overflow-scrolling: touch; /* ⭐ */
 }
 
+figure{text-align:center;}
+figcaption{color:grey;font:10px arial;}
+
 
 /**** Clearfix ****/
 nav .panel:after, nav#mainNav:after, .newsTitle:after, .bg:after,.post:after, ul.post li:after,nav#mainNav .inner:after{content:""; display: table;clear: both;}
